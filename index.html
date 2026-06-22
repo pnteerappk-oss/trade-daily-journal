@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trade Daily Journal</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">TD</div>
+          <div>
+            <strong data-i18n="appName">Trade Daily</strong>
+            <span data-i18n="appSub">Forex journal</span>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Main navigation">
+          <button class="nav-item active" data-view="dashboard">
+            <span class="icon">▦</span>
+            <span data-i18n="dashboard">Dashboard</span>
+          </button>
+          <button class="nav-item" data-view="journal">
+            <span class="icon">＋</span>
+            <span data-i18n="journal">Trade journal</span>
+          </button>
+          <button class="nav-item" data-view="assets">
+            <span class="icon">◈</span>
+            <span data-i18n="assets">Assets</span>
+          </button>
+          <button class="nav-item" data-view="growth">
+            <span class="icon">↗</span>
+            <span data-i18n="growth">Year growth</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="language-toggle" role="group" aria-label="Language">
+            <button class="language-option active" data-lang="th">TH</button>
+            <button class="language-option" data-lang="en">EN</button>
+          </div>
+          <div class="google-account">
+            <button class="ghost-button wide-action" id="googleConnect" data-i18n="connectGoogle">Connect Google</button>
+            <p class="google-status" id="googleStatus"></p>
+            <a class="sheet-link" id="googleSheetLink" href="#" target="_blank" rel="noreferrer" hidden data-i18n="openGoogleSheet">Open backup sheet</a>
+          </div>
+          <div class="storage-actions">
+            <button class="ghost-button" id="saveLocal" data-i18n="saveLocal">Save</button>
+            <button class="ghost-button" id="backupSheet" data-i18n="backupSheet">Backup</button>
+            <button class="ghost-button wide-action" id="importBackup" data-i18n="importBackup">Import backup</button>
+            <input type="file" id="backupFile" accept="application/json,.json" hidden />
+          </div>
+          <p class="backup-time" id="backupTime"></p>
+          <p class="sync-status" id="syncStatus" aria-live="polite"></p>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" data-i18n="workspaceLabel">Trading workspace</p>
+            <h1 id="viewTitle">Dashboard</h1>
+          </div>
+          <div class="month-control">
+            <button class="icon-button" id="prevMonth" aria-label="Previous month">‹</button>
+            <div>
+              <strong id="monthLabel"></strong>
+              <span id="yearLabel"></span>
+            </div>
+            <button class="icon-button" id="nextMonth" aria-label="Next month">›</button>
+          </div>
+        </header>
+
+        <section class="view active" id="dashboard">
+          <div class="metrics-grid">
+            <article class="metric">
+              <span data-i18n="weekPnl">This week</span>
+              <strong id="weekPnl">$0.00</strong>
+            </article>
+            <article class="metric">
+              <span data-i18n="monthPnl">This month</span>
+              <strong id="monthPnl">$0.00</strong>
+            </article>
+            <article class="metric">
+              <span data-i18n="yearPnl">This year</span>
+              <strong id="yearPnl">$0.00</strong>
+            </article>
+            <article class="metric">
+              <span data-i18n="winRate">Win rate</span>
+              <strong id="winRate">0%</strong>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="panel calendar-panel">
+              <div class="panel-heading">
+                <h2 data-i18n="dailyPnlCalendar">Daily PnL calendar</h2>
+                <span id="tradeCount">0 trades</span>
+              </div>
+              <div class="weekday-row" id="weekdayRow"></div>
+              <div class="calendar" id="calendar"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-heading">
+                <h2 data-i18n="recentTrades">Recent trades</h2>
+                <button class="text-button" data-switch="journal" data-i18n="addTradeShort">Add trade</button>
+              </div>
+              <div class="trade-list" id="recentTrades"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="journal">
+          <div class="journal-layout">
+            <form class="trade-form panel" id="tradeForm">
+              <div class="panel-heading">
+                <h2 data-i18n="newTrade">New trade</h2>
+              </div>
+              <label>
+                <span data-i18n="date">Date</span>
+                <input type="date" id="tradeDate" required />
+              </label>
+              <label>
+                <span data-i18n="asset">Asset</span>
+                <input type="text" id="tradeAsset" list="assetSuggestions" placeholder="EURUSD" required />
+                <datalist id="assetSuggestions"></datalist>
+              </label>
+              <label>
+                <span data-i18n="assetType">Asset type</span>
+                <select id="tradeType">
+                  <option value="forex" data-i18n="forex">Forex</option>
+                  <option value="metal" data-i18n="metal">Metal</option>
+                  <option value="index" data-i18n="index">Index</option>
+                  <option value="crypto" data-i18n="crypto">Crypto</option>
+                  <option value="other" data-i18n="other">Other</option>
+                </select>
+              </label>
+              <label>
+                <span data-i18n="pnl">PnL</span>
+                <input type="number" id="tradePnl" step="0.01" placeholder="125.50" required />
+              </label>
+              <label>
+                <span data-i18n="notes">Notes</span>
+                <textarea id="tradeNotes" rows="4" placeholder="London breakout"></textarea>
+              </label>
+              <div class="form-actions">
+                <button class="primary-button" type="submit" data-i18n="saveTrade">Save trade</button>
+                <button class="ghost-button" type="reset" data-i18n="clear">Clear</button>
+              </div>
+            </form>
+
+            <section class="panel">
+              <div class="panel-heading">
+                <h2 data-i18n="allTrades">All trades</h2>
+                <button class="ghost-button danger" id="clearTrades" data-i18n="clearAll">Clear all</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th data-i18n="date">Date</th>
+                      <th data-i18n="asset">Asset</th>
+                      <th data-i18n="assetType">Asset type</th>
+                      <th data-i18n="pnl">PnL</th>
+                      <th data-i18n="notes">Notes</th>
+                      <th data-i18n="actions">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tradeRows"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="assets">
+          <section class="panel">
+            <div class="panel-heading">
+              <h2 data-i18n="assetSummary">Asset type summary</h2>
+              <span id="bestAsset"></span>
+            </div>
+            <div class="asset-summary" id="assetSummary"></div>
+          </section>
+        </section>
+
+        <section class="view" id="growth">
+          <section class="panel growth-panel">
+            <div class="panel-heading">
+              <div>
+                <h2 data-i18n="yearlyComparison">Yearly growth comparison</h2>
+                <p class="panel-note" data-i18n="profitFactorHelp">Gross profit divided by gross loss</p>
+              </div>
+              <select id="baseYear"></select>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="growthChart" width="1000" height="420" aria-label="Yearly growth chart"></canvas>
+            </div>
+            <div class="year-cards" id="yearCards"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
